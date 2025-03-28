@@ -1,13 +1,75 @@
-/* Your Code Here */
+function createEmployeeRecord(array) {
+    return {
+        firstName: array[0],
+        familyName: array[1],
+        title: array[2],
+        payPerHour: array[3],
+        timeInEvents: [],
+        timeOutEvents: []
+    };
+}
 
-/*
- We're giving you this function. Take a look at it, you might see some usage
- that's new and different. That's because we're avoiding a well-known, but
- sneaky bug that we'll cover in the next few lessons!
+function createEmployeeRecords(arrays) {
+    return arrays.map(createEmployeeRecord);
+}
 
- As a result, the lessons for this function will pass *and* it will be available
- for you to use if you need it!
- */
+function createTimeInEvent(dateTimeString) {
+    const employee = this || {}; // Handle both direct calls and calls with 'this'
+    
+    if (!dateTimeString || typeof dateTimeString !== 'string') {
+        throw new Error("Invalid dateTimeString provided");
+    }
+
+    const [date, hour] = dateTimeString.split(" ");
+    
+    if (!date || !hour) {
+        throw new Error("dateTimeString must be in 'YYYY-MM-DD HHMM' format");
+    }
+
+    employee.timeInEvents = employee.timeInEvents || [];
+    employee.timeInEvents.push({
+        type: "TimeIn",
+        hour: parseInt(hour, 10),
+        date: date
+    });
+
+    return employee;
+}
+
+function createTimeOutEvent(dateTimeString) {
+    const employee = this || {}; // Handle both direct calls and calls with 'this'
+    
+    if (!dateTimeString || typeof dateTimeString !== 'string') {
+        throw new Error("Invalid dateTimeString provided");
+    }
+
+    const [date, hour] = dateTimeString.split(" ");
+    
+    if (!date || !hour) {
+        throw new Error("dateTimeString must be in 'YYYY-MM-DD HHMM' format");
+    }
+
+    employee.timeOutEvents = employee.timeOutEvents || [];
+    employee.timeOutEvents.push({
+        type: "TimeOut",
+        hour: parseInt(hour, 10),
+        date: date
+    });
+
+    return employee;
+}
+
+function hoursWorkedOnDate(date) {
+    const employee = this;
+    const timeIn = employee.timeInEvents.find(e => e.date === date).hour;
+    const timeOut = employee.timeOutEvents.find(e => e.date === date).hour;
+    return (timeOut - timeIn) / 100;
+}
+
+function wagesEarnedOnDate(date) {
+    const employee = this;
+    return hoursWorkedOnDate.call(employee, date) * employee.payPerHour;
+}
 
 const allWagesFor = function () {
     const eligibleDates = this.timeInEvents.map(function (e) {
@@ -21,3 +83,12 @@ const allWagesFor = function () {
     return payable
 }
 
+function findEmployeeByFirstName(srcArray, firstName) {
+    return srcArray.find(rec => rec.firstName === firstName);
+}
+
+function calculatePayroll(employeeRecords) {
+    return employeeRecords.reduce((total, rec) => {
+        return total + allWagesFor.call(rec);
+    }, 0);
+}
